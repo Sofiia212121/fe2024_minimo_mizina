@@ -1,80 +1,129 @@
 <?php
 get_header();
 ?>
-<section class="main-banner">
-        <img src="<?php echo get_template_directory_uri(); ?>/img/banner.jpg" alt="Banner Image">
+
+<?php
+if (get_query_var('paged')) {
+    $paged = get_query_var('paged');
+} elseif (get_query_var('page')) {
+    $paged = get_query_var('page');
+} else {
+    $paged = 1;
+}
+
+
+$args = array(
+    'post_type' => 'post',
+    'paged' => $paged,
+    'posts_per_page' => 4,
+    'post_status' => 'publish',
+    'category__in' => array(2, 3, 4, 5),
+);
+$query = new WP_Query($args);
+?>
+
+<?php
+$post = $query->posts[0];
+if ($post) {
+    setup_postdata($post);
+?>
+
+    <section class="main-banner">
+        <img src="<?php the_post_thumbnail_url('full'); ?>" alt="<?php the_title_attribute(); ?>">
     </section>
+
+    <!-- <?php
+            wp_reset_postdata();
+            ?> -->
 
     <section class="article-section">
-        <a href="#">PHOTODIARY</a>
-        <h1>The perfect weekend getaway</h1>
-        <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Natus deserunt quae esse labore quia, in aliquid ad.
-            Necessitatibus magni vel corporis consectetur ipsa! Saepe nulla voluptatem ipsam magni at eligendi, totam
-            molestias repudiandae? Laboriosam quos cupiditate autem unde nobis temporibus impedit asperiores similique.
-            Optio consequuntur perspiciatis totam! Eligendi aut enim dolores, alias ab, facilis veritatis tenetur,
-            assumenda iusto praesentium autem! Omnis nobis nisi fugiat error quisquam optio, vero et quod repellat
-            eveniet explicabo impedit inventore, cupiditate laboriosam eos animi numquam facere quo pariatur. Explicabo,
-            delectus consectetur eum modi quaerat soluta voluptates, eligendi odio inventore rerum architecto eaque
-            aliquam corrupti in?</p>
-        <a href="#">Leave a comment</a>
+        <a href="<?php echo get_permalink(); ?>"><?php
+                                                    $categories = get_the_category();
+                                                    foreach ($categories as $category) {
+                                                        echo $category->name . ' ';
+                                                    }
+                                                    ?></a>
+        <h1><?php echo get_the_title(); ?></h1>
+        <p><?php echo get_the_excerpt(); ?></p>
+        <a href="<?php echo get_permalink(); ?>">Leave a comment</a>
     </section>
 
-    <section class="grid">
-        <div>
-            <img src="<?php echo get_template_directory_uri(); ?>/img/dance.jpg" alt="Dance Image">
-            <a href="#">LIFESTYLE</a>
-            <h3>More than just a music festival</h3>
-            <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Praesentium optio repellat eum vero ipsam
-                aspernatur culpa magnam nulla quo aperiam.</p>
-        </div>
-        <div>
-            <img src="<?php echo get_template_directory_uri(); ?>/img/coffee.jpg" alt="Coffee Image">
-            <a href="#">LIFESTYLE</a>
-            <h3>Life tastes better with coffee</h3>
-            <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Nemo at cupiditate magni animi iusto. Quaerat
-                ullam nobis ducimus repellendus doloremque.</p>
-        </div>
-        <div>
-            <img src="<?php echo get_template_directory_uri(); ?>/img/bridge.jpg" alt="Bridge Image">
-            <a href="#">PHOTODIARY</a>
-            <h3>American dream</h3>
-            <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Molestias dolore fugit dolorum assumenda,
-                laboriosam delectus omnis inventore culpa numquam nesciunt!</p>
-        </div>
-        <div>
-            <img src="<?php echo get_template_directory_uri(); ?>/img/calmness.jpg" alt="Calmness Image">
-            <a href="#">PHOTODIARY</a>
-            <h3>A day exploring the Alps</h3>
-            <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Nostrum doloribus beatae excepturi voluptas quod
-                commodi deserunt dolorum. Eum, deleniti vel.</p>
-        </div>
-    </section>
+<?php
+    wp_reset_postdata();
+}
+?>
 
-    <section class="newsletter">
-        <h2>Sign up for our newsletter!</h2>
-        <form>
-            <input type="email" placeholder="Enter a valid email address">
-            <button>&#10148;</button>
-        </form>
-    </section>
+<section class="grid">
+    <?php
+    $query_posts_length = count($query->posts);
 
-    <section class="grid">
-        <div>
-            <img src="<?php echo get_template_directory_uri(); ?>/img/path.jpg" alt="Path Image">
-            <a href="#">LIFESTYLE</a>
-            <h3>Top 10 song for running</h3>
-            <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Reprehenderit excepturi blanditiis nesciunt repellat animi ab asperiores ullam aperiam exercitationem saepe!</p>
-        </div>
-        <div>
-            <img src="<?php echo get_template_directory_uri(); ?>/img/road.jpg" alt="Road Image">
-            <a href="#">LIFESTYLE</a>
-            <h3>Cold winter days</h3>
-            <p>Lorem, ipsum dolor sit amet consectetur adipisicing elit. Nisi maiores odio sint perspiciatis vel? Sapiente iusto distinctio quas saepe. Voluptatibus!</p>
-        </div>
-    </section>
+    for ($i = 0; $i < min($query_posts_length, 5); $i++) {
+        $post = $query->posts[$i];
+        setup_postdata($post);
+    ?>
 
-    <section class="load-more">
-        <button>Load more</button>
-    </section>
+        <div>
+            <img src="<?php the_post_thumbnail_url('medium'); ?>" alt="<?php the_title_attribute(); ?>">
+            <a href="<?php echo get_permalink(); ?>"><?php
+                                                        $categories = get_the_category();
+                                                        if (!empty($categories)) {
+                                                            $category_names = array_map(function ($category) {
+                                                                return $category->name;
+                                                            }, $categories);
+                                                            echo implode(' ', $category_names);
+                                                        } else {
+                                                            echo "Uncategorized";
+                                                        }
+                                                        ?></a>
+            <h3><?php echo get_the_title(); ?></h3>
+            <p><?php echo get_the_excerpt(); ?></p>
+        </div>
+    <?php
+    }
+    wp_reset_postdata();
+    ?>
+</section>
+
+<section class="newsletter">
+    <h2>Sign up for our newsletter!</h2>
+    <form>
+        <input type="email" placeholder="Enter a valid email address">
+        <button>&#10148;</button>
+    </form>
+</section>
+
+<section class="grid">
+    <?php
+    $args = array(
+        'posts_per_page' => 2,
+        'category' => 2,
+    );
+    $query = new WP_Query($args);
+
+    if ($query->have_posts()) {
+        while ($query->have_posts()) {
+            $query->the_post();
+    ?>
+            <div>
+                <img src="<?php the_post_thumbnail_url('medium'); ?>" alt="<?php the_title_attribute(); ?>">
+                <a href="<?php the_permalink(); ?>"><?php
+                                                    $categories = get_the_category();
+                                                    foreach ($categories as $category) {
+                                                        echo $category->name . ' ';
+                                                    }
+                                                    ?></a>
+                <h3><?php the_title(); ?></h3>
+                <p><?php the_excerpt(); ?></p>
+            </div>
+    <?php
+        }
+        wp_reset_postdata();
+    }
+    ?>
+</section>
+
+<section class="load-more">
+    <button>Load more</button>
+</section>
 <?php
 get_footer();

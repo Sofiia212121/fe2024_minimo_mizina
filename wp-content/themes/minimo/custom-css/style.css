@@ -114,7 +114,7 @@ nav ul li a {
 }
 
 .newsletter {
-    max-height: 290px;
+    /* max-height: 350px; */
     background: #f0f0f0;
     padding: 75px 390px;
     text-align: center;
