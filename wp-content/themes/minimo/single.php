@@ -4,102 +4,128 @@ get_header();
 
 <main class="main-content">
 	<section class="hero">
-		<img src="<?php echo esc_url($thumbnail_url); ?>" alt="<?php the_title_attribute(); ?>" class="hero-image">
+		<img src="<?php echo esc_url(get_the_post_thumbnail_url()); ?>" alt="<?php the_title_attribute(); ?>" class="hero-image">
 	</section>
 
 	<article class="blog-post">
-
-		<p class="category">PHOTODIARY</p>
-		<h2 class="title">The perfect weekend getaway</h2>
-		<p class="content">Lorem ipsum dolor sit amet consectetur adipisicing elit. Ea veritatis, dolore aut
-			placeat fugiat voluptas cumque aliquid adipisci sapiente accusamus, blanditiis ex magni. Dicta quos
-			aspernatur molestiae sapiente illum, natus nobis voluptas neque cum adipisci molestias? Fuga vero
-			modi nam autem natus est officiis recusandae asperiores ea molestias mollitia minima id illum maxime
-			aspernatur deleniti tenetur dignissimos ipsam temporibus labore cum quam dolor, eum exercitationem.
-			Officiis minus omnis reprehenderit eaque placeat, facere architecto excepturi voluptatem, nisi
-			sapiente incidunt eveniet culpa quam voluptatum ipsa, nesciunt a repudiandae! Soluta facilis, non
-			sunt minima harum fugiat recusandae aut doloribus pariatur libero quaerat provident?</p>
+		<p class="category">
+			<?php
+			$categories = get_the_category();
+			if (!empty($categories)) {
+				echo esc_html($categories[0]->name);
+			}
+			?>
+		</p>
+		<h2 class="title"><?php the_title(); ?></h2>
+		<p class="content"><?php echo get_the_excerpt(); ?></p>
 
 		<div class="images">
-			<img src="../img/woman-scarf.jpg" alt="Walking with a scarf">
-			<img src="../img/woman-hills.jpg" alt="Standing near hills">
-			<img src="../img/woman-sand.jpg" alt="Back view near sand">
+			<img src="<?php echo get_template_directory_uri(); ?>/img/woman-scarf.jpg" alt="Walking with a scarf">
+			<img src="<?php echo get_template_directory_uri(); ?>/img/woman-hills.jpg" alt="Standing near hills">
+			<img src="<?php echo get_template_directory_uri(); ?>/img/woman-sand.jpg" alt="Back view near sand">
 		</div>
 
-		<blockquote class="quote">"Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolorum optio totam
-			necessitatibus esse dignissimos porro recusandae veritatis, consectetur quisquam, blanditiis ipsa
-			tenetur vitae molestiae! Quisquam consequuntur expedita quis! Dignissimos dicta sapiente beatae
-			ipsum quaerat."</blockquote>
-		<p class="content">Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolorum optio totam
-			necessitatibus esse dignissimos porro recusandae veritatis, consectetur quisquam, blanditiis ipsa
-			tenetur vitae molestiae! Quisquam consequuntur expedita quis! Dignissimos dicta sapiente beatae
-			ipsum quaerat. Iusto cupiditate blanditiis vitae enim quia error minus, molestias architecto.
-			Nesciunt, reiciendis! Voluptates quos repellendus similique in tenetur ea recusandae aliquam
-			temporibus dolor? Repudiandae necessitatibus delectus sint blanditiis modi reprehenderit architecto,
-			asperiores possimus veniam fugiat temporibus consequuntur sunt neque, in numquam ex ipsa natus
-			mollitia quasi, ratione quibusdam repellat sequi. Facere, sit exercitationem fuga eaque repellat
-			earum excepturi ipsum laborum quasi totam placeat reiciendis. Vero, repellendus.</p>
+		<?php
+		if (get_field('quote')) {
+			echo '<blockquote class="quote">' . wp_kses_post(get_field('quote')) . '</blockquote>';
+		} else {
+			echo '<p>Цитата не знайдена</p>';
+		}
+		?>
+
+
+		<p class="content"><?php echo get_the_excerpt(); ?></p>
 
 		<div class="share">
 			<p>SHARE</p>
-			<a href="#"><img src="../img/facebook.png" alt="Facebook"></a>
-			<a href="#"><img src="../img/twitter.png" alt="Twitter"></a>
-			<a href="#"><img src="../img/google.png" alt="Google"></a>
-			<a href="#"><img src="../img/pinterest.png" alt="Pinterest"></a>
+			<a href="https://facebook.com/sharer/sharer.php?u=<?php echo urlencode(get_permalink()); ?>" target="_blank">
+				<img src="<?php echo get_template_directory_uri(); ?>/img/facebook.png" alt="Facebook">
+			</a>
+			<a href="https://twitter.com/share?url=<?php echo urlencode(get_permalink()); ?>&text=<?php echo urlencode(get_the_title()); ?>" target="_blank">
+				<img src="<?php echo get_template_directory_uri(); ?>/img/twitter.png" alt="Twitter">
+			</a>
+			<a href="https://plus.google.com/share?url=<?php echo urlencode(get_permalink()); ?>" target="_blank">
+				<img src="<?php echo get_template_directory_uri(); ?>/img/google.png" alt="Google">
+			</a>
+			<a href="https://pinterest.com/pin/create/button/?url=<?php echo urlencode(get_permalink()); ?>&media=<?php echo urlencode(get_the_post_thumbnail_url()); ?>&description=<?php echo urlencode(get_the_title()); ?>" target="_blank">
+				<img src="<?php echo get_template_directory_uri(); ?>/img/pinterest.png" alt="Pinterest">
+			</a>
 		</div>
 	</article>
 
 	<section class="related-posts">
 		<h3>YOU MAY ALSO LIKE</h3>
 		<div class="related-cards">
-			<div class="card">
-				<img src="../img/road.jpg" alt="Cold winter days">
-				<p>Cold winter days</p>
-			</div>
-			<div class="card">
-				<img src="../img/calmness.jpg" alt="A day exploring the Alps">
-				<p>A day exploring the Alps</p>
-			</div>
-			<div class="card">
-				<img src="../img/bridge.jpg" alt="American dream">
-				<p>American dream</p>
-			</div>
+			<?php
+			$related_posts = new WP_Query(array(
+				'category__in' => wp_get_post_categories(get_the_ID()),
+				'posts_per_page' => 3,
+				'post__not_in' => array(get_the_ID())
+			));
+
+			if ($related_posts->have_posts()) {
+				while ($related_posts->have_posts()) {
+					$related_posts->the_post();
+			?>
+					<div class="card">
+						<?php
+						if (has_post_thumbnail()) {
+						?>
+							<a href="<?php the_permalink(); ?>">
+								<img src="<?php the_post_thumbnail_url('thumbnail'); ?>" alt="<?php the_title_attribute(); ?>">
+							</a>
+						<?php
+						}
+						?>
+						<p><a href="<?php the_permalink(); ?>"><?php the_title(); ?></a></p>
+					</div>
+			<?php
+				}
+				wp_reset_postdata();
+			}
+			?>
 		</div>
 	</section>
 
 	<section class="comments">
-		<h3>2 COMMENTS</h3>
+		<?php
+		$args = array(
+			'style'       => 'div',
+			'short_ping'  => true,
+			'avatar_size' => 64,
+			'callback'    => 'my_comment_callback',
+		);
+
+		if (have_comments()) {
+			echo '<h3>' . get_comments_number() . ' COMMENTS</h3>';
+			wp_list_comments($args);
+		} else {
+			echo '<h3>No comments yet. Be the first to comment!</h3>';
+		}
+		?>
+
 		<div class="comment">
-			<img src="../img/john-doe.jpg" alt="John Doe">
-			<div class="commemt-content">
-				<p class="name">Jane Doe</p>
-				<p class="description">Lorem ipsum dolor sit amet consectetur adipisicing elit.</p>
-				<h3><a href="#">REPLY</a></h3>
-			</div>
+			<?php
+			$form_args = array(
+				'title_reply' => __(''),
+				'label_submit' => __('&#10148;'),
+				'comment_field' => '<textarea placeholder="Join the discussion" name="comment" id="comment"></textarea>',
+			);
+			comment_form($form_args);
+			?>
 		</div>
-		<div class="comment">
-			<img src="../img/john-doe.jpg" alt="John Doe">
-			<div class="commemt-content">
-				<p class="name">Jane Doe</p>
-				<p class="description">Lorem ipsum dolor sit amet consectetur adipisicing elit.</p>
-				<h3><a href="#">REPLY</a></h3>
-			</div>
-		</div>
-		<div class="comment">
-			<img src="../img/john-doe.jpg" alt="John Doe">
-			<form class="comment-form">
-				<textarea placeholder="Join the discussion"></textarea>
-				<button>&#10148;</button>
-			</form>
-		</div>
+
 		<div class="connected">
 			<p>CONNECTED WITH</p>
-			<a href="#"><img src="../img/facebook.png" alt="Facebook"></a>
-			<a href="#"><img src="../img/twitter.png" alt="Twitter"></a>
+			<a href="https://www.facebook.com/sharer/sharer.php?u=<?php echo urlencode(get_permalink()); ?>" target="_blank">
+				<img src="<?php echo get_template_directory_uri(); ?>/img/facebook.png" alt="Facebook">
+			</a>
+			<a href="https://twitter.com/intent/tweet?url=<?php echo urlencode(get_permalink()); ?>&text=<?php echo urlencode(get_the_title()); ?>" target="_blank">
+				<img src="<?php echo get_template_directory_uri(); ?>/img/twitter.png" alt="Twitter">
+			</a>
 		</div>
 	</section>
 </main>
 
 <?php
-get_sidebar();
 get_footer();

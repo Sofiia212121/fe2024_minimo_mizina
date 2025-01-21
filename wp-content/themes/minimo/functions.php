@@ -286,3 +286,63 @@ function true_duplicate_post_link($actions, $post)
 }
 
 add_filter('post_row_actions', 'true_duplicate_post_link', 10, 2);
+
+// Функція для кастомізації вигляду коментарів
+function my_comment_callback($comment, $args, $depth)
+{
+?>
+	<div class="comment">
+		<?php echo get_avatar($comment, 64); ?>
+		<div class="comment-content">
+			<p class="name">
+				<?php echo get_comment_author_link() ?: 'Анонім'; ?>
+			</p>
+			<p class="description">
+				<?php comment_text() ?: 'Коментар відсутній.'; ?>
+			</p>
+			<h3>
+				<?php
+				$max_depth = isset($args['max_depth']) ? $args['max_depth'] : 5;
+				if (isset($depth)) {
+					comment_reply_link(array_merge($args, array(
+						'depth' => $depth,
+						'max_depth' => $max_depth
+					)));
+				} else {
+					echo 'Відповіді недоступні.';
+				}
+				?>
+			</h3>
+		</div>
+	</div>
+<?php
+}
+
+// multilang
+function my_site_custom_languages_selector_template()
+{
+	if (function_exists('wpm_get_languages')) {
+		$languages = wpm_get_languages();
+		$current = wpm_get_language();
+
+		$out = '<div class="b-language-selector">';
+
+		foreach ($languages as $code => $language) {
+			$toggle_url = esc_url(wpm_translate_current_url($code));
+			$css_classes = 'b-language-selector-link ';
+
+			if ($code === $current) {
+				$css_classes .= 'b-language-selector-link--active';
+			}
+
+			$out .= '<a href="' . $toggle_url . '" class="' . $css_classes . '" data-lang="' . esc_attr($code) . '">';
+			$out .= $language['name'];
+			$out .= '</a>';
+			$out .= '&nbsp;';
+		}
+
+		$out .= '</div>';
+
+		return $out;
+	}
+}

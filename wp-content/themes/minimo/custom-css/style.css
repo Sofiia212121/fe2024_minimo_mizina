@@ -25,6 +25,18 @@ img {
     display: block;
 }
 
+.b-language-selector {
+    display: flex;
+    gap: 5px;
+    justify-content: center;
+    align-items: center;
+}
+
+.b-language-selector-link--active {
+    text-decoration: underline;
+    color: #3a6374;
+}
+
 header {
     padding: 70px 65px;
     display: flex;
@@ -114,7 +126,6 @@ nav ul li a {
 }
 
 .newsletter {
-    /* max-height: 350px; */
     background: #f0f0f0;
     padding: 75px 390px;
     text-align: center;
@@ -125,7 +136,7 @@ nav ul li a {
     margin-bottom: 80px;
 }
 
-.newsletter form {
+.newsletter .wpcf7 {
     display: flex;
     justify-content: center;
     gap: 10px;
@@ -133,50 +144,48 @@ nav ul li a {
     margin: 0 auto;
 }
 
-.newsletter input {
+.newsletter .input-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+    width: 100%;
+    max-width: 600px;
+}
+
+.newsletter .wpcf7 input[type="email"] {
     font-family: 'MainFont', sans-serif;
-    padding: 10px;
-    flex: 1;
+    padding: 10px 40px 10px 10px;
     font-size: 16px;
     border: none;
     border-bottom: 1px solid #7e8388;
     background: #f0f0f0;
+    width: 100%;
 }
 
-.newsletter button {
+.newsletter .wpcf7-submit {
+    position: absolute;
+    right: 15px;
+    top: 20%;
+    transform: translateY(-20%);
     background: #7e8388;
     color: #fff;
     border: none;
-    padding: 10px 20px;
     border-radius: 4px;
+    padding: 7px 12px;
     font-size: 16px;
     cursor: pointer;
     transition: background 0.3s;
 }
 
-.newsletter button:hover {
+.newsletter .wpcf7-submit:hover {
     background: #b8bbbe;
 }
 
-.load-more {
-    max-height: 300px;
-    margin: 60px 0;
-    text-align: center;
-    padding: 20px;
-}
-
-.load-more button {
-    background: #ffffff;
-    color: #3c4042;
-    border: 1px solid #8a8b8b;
-    padding: 10px 20px;
-    font-size: 16px;
-    cursor: pointer;
-    transition: background 0.3s;
-}
-
-.load-more button:hover {
-    background: #ececec;
+.pagination {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+    margin-bottom: 20px;
 }
 
 .footer {
